@@ -1,35 +1,161 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Best store!</title>
-    <script type="text/javascript" src="/static/update.js"></script>
-    <link href="static/store.css" rel="stylesheet">
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .game-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed #ddd;
+        }
 
+        /* Стили для формы добавления игры */
+        .add-game-form {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .add-game-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .add-game-form input[type="text"],
+        .add-game-form input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;  /* Чтобы padding не увеличивал ширину элемента */
+        }
+
+        .add-game-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-game-form button:hover {
+            background-color: #3e8e41;
+        }
+
+         /* Стили для кнопки очистки базы данных */
+        .clear-database-form {
+            margin-top: 20px;
+        }
+
+        .clear-database-form button {
+            background-color: #f44336; /* Красный цвет */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .clear-database-form button:hover {
+            background-color: #da190b; /* Темно-красный цвет */
+        }
+    </style>
+</head>
 <body>
-    <h1>Furniture store:</h1>
-    <h3>Add new product:</h3>
-    <form>
-        <div>
-            <input type="text" name="prod_name" id="prod_name">
-            <label for="prod_name">Product name</label>
+    <div class="container">
+        <h1>My Game Collection</h1>
+
+        <!-- Форма для добавления новой игры -->
+        <div class="add-game-form">
+            <form method="POST">
+                <label for="name">Game Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="year">Year:</label>
+                <input type="number" id="year" name="year" required>
+
+                <button type="submit">Add Game</button>
+            </form>
         </div>
-        <div>
-            <input type="number" name="price" id="price">
-            <label for="price">Price (rub.)</label>
-        </div>
-        <button onClick="addProduct()">Add</button>
-    </form>
-    <ul>
-        {% for product in products_list %}
-        <li>
-            <div>
-                <div>{{ product['prod_name'] }}</div>
-                <div>{{ product['price'] }} rub.</div>
-                <input value="{{product['id']}}" onChange="updateProd(this)" name="in_stock" type="checkbox" {% if product.in_stock %} checked {% endif %}>
-                <label for="in_stock">In stock</label>
+        
+        {% if games %}
+            <div class="game-list">
+                {% for game in games %}
+                <div class="game-item">
+                    <strong>{{ game.name }}</strong> ({{ game.year }})
+                </div>
+                {% endfor %}
             </div>
-        </li>
-        {% endfor %}
-    </ul>
+        {% else %}
+            <p>No games found. Add your first game!</p>
+        {% endif %}
+
+        <!-- Форма для очистки базы данных -->
+        <div class="clear-database-form">
+            <form method="POST">
+                <button type="submit" name="clear">Clear Database</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
+
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="add-game">
+        <h2>Добавить игру</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Название:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="year">Год издания:</label>
+                <input type="number" id="year" name="year" required>
+            </div>
+            <button type="submit">Добавить</button>
+        </form>
+    </section>
+
+    <section class="games-list">
+        <h2>Список игр</h2>
+        {% if games %}
+            <ul>
+                {% for game in games %}
+                    <li>
+                        <span class="game-title">{{ game.title }}</span> 
+                        <strong class="game-year">({{ game.year }})</strong>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Пока нет добавленных игр.</p>
+        {% endif %}
+    </section>
+{% endblock %}
