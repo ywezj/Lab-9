@@ -1,3 +1,4 @@
+#выполнено сразу с допзаданием
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 import os
@@ -16,17 +17,22 @@ class Game(db.Model):
     def __repr__(self):
         return f'<Game {self.title} ({self.year})>'
 
-# Создаём таблицы при запуске приложения
 with app.app_context():
     db.create_all()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        # Обработка очистки списка
+        if 'clear' in request.form:
+            Game.query.delete()
+            db.session.commit()
+            return redirect(url_for('index'))
+        
+        # Обработка добавления игры
         title = request.form['title']
         year = request.form['year']
         
-        # Проверка ввода
         if not title or not year:
             return "Необходимо заполнить все поля", 400
             
